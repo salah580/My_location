@@ -4,17 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>موقعي الجغرافي</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- تحميل أيقونات FontAwesome -->
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      background: linear-gradient(135deg, #6EC1E4, #2A78D0); /* تدرج لوني أزرق */
       margin: 0;
       padding: 0;
       text-align: center;
       animation: fadeIn 1s ease-out;
     }
     header {
-      background-color: #ff6f61;
+      background-color: #1A4B8D;
       color: white;
       padding: 20px;
       font-size: 24px;
@@ -26,11 +27,11 @@
     }
     button {
       margin: 10px;
-      padding: 10px 20px;
+      padding: 12px 20px;
       font-size: 16px;
       border: none;
       border-radius: 12px;
-      background: linear-gradient(145deg, #ff8577, #e85b4d);
+      background: linear-gradient(145deg, #56CCF2, #2F80ED); /* تدرج لوني */
       color: white;
       cursor: pointer;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
@@ -40,17 +41,20 @@
       transform: scale(1.05);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
-    input[type="text"] {
-      width: 60%;
-      padding: 10px;
-      border: 2px solid #ff6f61;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      font-size: 16px;
-      transition: border-color 0.3s;
+    .icon-btn {
+      margin: 10px;
+      padding: 12px;
+      background-color: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    input[type="text"]:focus {
-      border-color: #ff8577;
+    .icon-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     }
     iframe {
       width: 90%;
@@ -114,6 +118,21 @@
     <button onclick="getLocation()">تحديد موقعي</button>
   </div>
 
+  <div class="container">
+    <button class="icon-btn" onclick="openWhatsApp()">
+      <i class="fab fa-whatsapp"></i> <!-- أيقونة واتساب -->
+    </button>
+    <button class="icon-btn" onclick="openTelegram()">
+      <i class="fab fa-telegram-plane"></i> <!-- أيقونة تلغرام -->
+    </button>
+    <button class="icon-btn" onclick="getLocation()">
+      <i class="fas fa-location-arrow"></i> <!-- أيقونة تحديد الموقع -->
+    </button>
+    <button class="icon-btn" onclick="searchPlace()">
+      <i class="fas fa-search"></i> <!-- أيقونة البحث -->
+    </button>
+  </div>
+
   <iframe id="mapFrame" src="" class="loaded"></iframe>
 
   <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
@@ -166,6 +185,18 @@
         <a href="https://wa.me/?text=${encodeURIComponent(url)}" target="_blank">واتساب</a>
         <a href="https://t.me/share/url?url=${encodeURIComponent(url)}" target="_blank">تليجرام</a>
       `;
+    }
+
+    function openWhatsApp() {
+      const text = document.getElementById("locationInfo").textContent;
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+
+    function openTelegram() {
+      const text = document.getElementById("locationInfo").textContent;
+      const url = `https://t.me/share/url?url=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
     }
 
     function saveCSV(lat, lon) {
