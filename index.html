@@ -8,14 +8,14 @@
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #6EC1E4, #2A78D0); /* تدرج لوني أزرق */
+      background: linear-gradient(135deg, #FFD700, #FF6347); /* تدرج لوني أصفر إلى برتقالي */
       margin: 0;
       padding: 0;
       text-align: center;
       animation: fadeIn 1s ease-out;
     }
     header {
-      background-color: #1A4B8D;
+      background-color: #FFA500;
       color: white;
       padding: 20px;
       font-size: 24px;
@@ -31,7 +31,7 @@
       font-size: 16px;
       border: none;
       border-radius: 12px;
-      background: linear-gradient(145deg, #56CCF2, #2F80ED); /* تدرج لوني */
+      background: linear-gradient(145deg, #FFB74D, #FF9800); /* تدرج لوني من البرتقالي الفاتح إلى الغامق */
       color: white;
       cursor: pointer;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
@@ -47,7 +47,7 @@
       background-color: transparent;
       border: 2px solid #fff;
       color: #fff;
-      border-radius: 50%;
+      border-radius: 12px;
       font-size: 24px;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -55,6 +55,9 @@
     .icon-btn:hover {
       transform: scale(1.1);
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    .icon-btn i {
+      margin-left: 10px;
     }
     iframe {
       width: 90%;
@@ -120,16 +123,16 @@
 
   <div class="container">
     <button class="icon-btn" onclick="openWhatsApp()">
-      <i class="fab fa-whatsapp"></i> <!-- أيقونة واتساب -->
+      <i class="fab fa-whatsapp"></i> واتساب <!-- أيقونة واتساب -->
     </button>
     <button class="icon-btn" onclick="openTelegram()">
-      <i class="fab fa-telegram-plane"></i> <!-- أيقونة تلغرام -->
+      <i class="fab fa-telegram-plane"></i> تلغرام <!-- أيقونة تلغرام -->
     </button>
     <button class="icon-btn" onclick="getLocation()">
-      <i class="fas fa-location-arrow"></i> <!-- أيقونة تحديد الموقع -->
+      <i class="fas fa-location-arrow"></i> تحديد الموقع <!-- أيقونة تحديد الموقع -->
     </button>
     <button class="icon-btn" onclick="searchPlace()">
-      <i class="fas fa-search"></i> <!-- أيقونة البحث -->
+      <i class="fas fa-search"></i> بحث <!-- أيقونة البحث -->
     </button>
   </div>
 
