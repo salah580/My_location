@@ -1,237 +1,142 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>موقعي على الخريطة</title>
-
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- Animate.css -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>موقعي الجغرافي</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Arial', sans-serif;
-      background-color: #f4f4f9;
-      color: #333;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .dark-mode {
-      background-color: #121212;
-      color: #eee;
-    }
-
-    header {
-      background-color: #4CAF50;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2rem;
-      padding: 2rem;
-    }
-
-    .map-box, .info-box {
-      flex: 1 1 350px;
-      max-width: 600px;
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 1rem;
-      transition: background-color 0.3s;
-    }
-
-    .dark-mode .map-box, .dark-mode .info-box {
-      background-color: #1e1e1e;
-    }
-
-    #map {
-      height: 400px;
-      border-radius: 10px;
-    }
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      margin: 10px 5px 0;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    .icon-btn i {
-      margin-left: 5px;
-    }
-
-    ul {
-      list-style: none;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      margin: 0;
       padding: 0;
+      text-align: center;
     }
-
-    li {
-      margin: 5px 0;
+    header {
+      background-color: #ff6f61;
+      color: white;
+      padding: 20px;
+      font-size: 24px;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .container {
+      padding: 20px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #ff8577, #e85b4d);
+      color: white;
       cursor: pointer;
-      transition: color 0.3s;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
     }
-
-    li:hover {
-      color: #4CAF50;
+    button:hover {
+      transform: scale(1.05);
     }
-
-    @media (max-width: 600px) {
-      header {
-        font-size: 1.2rem;
-      }
-
-      button {
-        width: 100%;
-      }
+    input[type="text"] {
+      width: 60%;
+      padding: 10px;
+      border: 2px solid #ff6f61;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    iframe {
+      width: 90%;
+      height: 400px;
+      border: none;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+    .info {
+      background-color: white;
+      padding: 15px;
+      margin: 20px auto;
+      border-radius: 12px;
+      width: 80%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .share-links a {
+      display: inline-block;
+      margin: 5px;
+      padding: 12px 18px;
+      background: linear-gradient(145deg, #25D366, #1ebc57);
+      color: white;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .share-links a:hover {
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
-  <header>موقعي على الخريطة</header>
-
+  <header>مرحبًا بك في موقعي الجغرافي</header>
   <div class="container">
-    <div class="map-box animate__animated animate__fadeIn">
-      <div id="map"></div>
-    </div>
-
-    <div class="info-box animate__animated animate__fadeIn">
-      <h3><i class="fa-solid fa-location-dot"></i> معلومات الموقع</h3>
-      <p id="coords">اضغط على الزر لتحديد موقعك.</p>
-      <button class="icon-btn" onclick="getLocation()">
-        <i class="fa-solid fa-crosshairs"></i> تحديد الموقع
-      </button>
-      <button class="icon-btn" onclick="shareLocation()">
-        <i class="fa-solid fa-share-nodes"></i> مشاركة موقعي
-      </button>
-      <button class="icon-btn" onclick="toggleDarkMode()">
-        <i class="fa-solid fa-moon"></i> الوضع الداكن
-      </button>
-      <button class="icon-btn" onclick="clearHistory()">
-        <i class="fa-solid fa-trash"></i> مسح المحفوظات
-      </button>
-
-      <h4 style="margin-top: 1.5rem;"><i class="fa-solid fa-clock-rotate-left"></i> المواقع السابقة</h4>
-      <ul id="historyList"></ul>
-    </div>
-  </div>
-
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <script>
-    let map, marker;
-
-    function initMap() {
-      map = L.map('map').setView([24.7136, 46.6753], 5); // موقع افتراضي (الرياض)
-
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/{theme}_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        theme: isDarkMode() ? 'dark' : 'light'
-      }).addTo(map);
-    }
+    <input type="text" id="searchInput" placeholder="ابحث عن مكان...">
+    <button onclick="searchPlace()">بحث</button>
+    <button onclick="getLocation()">تحديد موقعي</button>
+  </div>  <iframe id="mapFrame" src=""></iframe>  <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>  <div class="info share-links" id="shareLinks" style="display:none;"></div>  <script>
+    let mapFrame = document.getElementById("mapFrame");
+    let infoDiv = document.getElementById("locationInfo");
+    let shareDiv = document.getElementById("shareLinks");
 
     function getLocation() {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          showMap(lat, lon);
+          await showAddress(lat, lon);
+          generateShareLinks(lat, lon);
+          saveCSV(lat, lon);
+        });
       } else {
         alert("المتصفح لا يدعم تحديد الموقع.");
       }
     }
 
-    function showPosition(position) {
-      const lat = position.coords.latitude.toFixed(5);
-      const lon = position.coords.longitude.toFixed(5);
-
-      document.getElementById("coords").textContent = `خط العرض: ${lat}, خط الطول: ${lon}`;
-
-      if (marker) map.removeLayer(marker);
-      marker = L.marker([lat, lon]).addTo(map);
-      map.setView([lat, lon], 15);
-
-      saveToHistory(lat, lon);
-      displayHistory();
+    async function showAddress(lat, lon) {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=ar`);
+      const data = await res.json();
+      infoDiv.innerHTML = `<h3>الموقع الحالي:</h3><p>${data.display_name}</p>`;
     }
 
-    function saveToHistory(lat, lon) {
-      let history = JSON.parse(localStorage.getItem("locations")) || [];
-      history.push({ lat, lon });
-      localStorage.setItem("locations", JSON.stringify(history));
+    function showMap(lat, lon) {
+      mapFrame.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
     }
 
-    function displayHistory() {
-      const list = document.getElementById("historyList");
-      list.innerHTML = "";
-      const history = JSON.parse(localStorage.getItem("locations")) || [];
-      history.slice(-5).reverse().forEach(loc => {
-        const li = document.createElement("li");
-        li.textContent = `${loc.lat}, ${loc.lon}`;
-        li.onclick = () => {
-          map.setView([loc.lat, loc.lon], 15);
-          if (marker) marker.setLatLng([loc.lat, loc.lon]);
-        };
-        list.appendChild(li);
-      });
+    function searchPlace() {
+      const query = document.getElementById("searchInput").value;
+      if (query) {
+        mapFrame.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=15&output=embed`;
+        infoDiv.innerHTML = `<p>عرض نتائج البحث: ${query}</p>`;
+      }
     }
 
-    function shareLocation() {
-      const text = document.getElementById("coords").textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("تم نسخ الموقع للمشاركة.");
-      });
+    function generateShareLinks(lat, lon) {
+      const url = `https://maps.google.com/?q=${lat},${lon}`;
+      shareDiv.style.display = "block";
+      shareDiv.innerHTML = `
+        <a href="https://wa.me/?text=${encodeURIComponent(url)}" target="_blank">واتساب</a>
+        <a href="https://t.me/share/url?url=${encodeURIComponent(url)}" target="_blank">تليجرام</a>
+      `;
     }
 
-    function showError(error) {
-      alert("تعذر تحديد الموقع: " + error.message);
+    function saveCSV(lat, lon) {
+      const csvContent = `Latitude,Longitude\n${lat},${lon}`;
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `location-${Date.now()}.csv`;
+      link.click();
     }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark-mode");
-      localStorage.setItem("dark", document.body.classList.contains("dark-mode"));
-      map.remove();
-      initMap();
-      displayHistory();
-    }
-
-    function isDarkMode() {
-      return localStorage.getItem("dark") === "true";
-    }
-
-    function clearHistory() {
-      localStorage.removeItem("locations");
-      displayHistory();
-    }
-
-    window.onload = () => {
-      if (isDarkMode()) document.body.classList.add("dark-mode");
-      initMap();
-      displayHistory();
-    };
-  </script>
-</body>
+  </script></body>
 </html>
