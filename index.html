@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>موقعي الجغرافي</title>
+  <title>موقعي</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -13,19 +14,20 @@
       padding: 0;
       text-align: center;
       animation: fadeIn 1s ease-out;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
     header {
       background-color: #C0C0C0;
       color: white;
       padding: 10px 20px;
-      font-size: 20px;
-      border-radius: 20px;
+      font-size: 22px;
+      border-radius: 0 0 20px 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      display: inline-block;
+      width: fit-content;
       margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
     .container {
       padding: 20px;
@@ -76,9 +78,6 @@
       transform: scale(1.1);
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     }
-    .icon-btn i {
-      margin-left: 10px;
-    }
     iframe {
       width: 90%;
       height: 400px;
@@ -115,6 +114,9 @@
     .share-links a:hover {
       transform: scale(1.05);
     }
+    #qrcode {
+      margin-top: 10px;
+    }
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -138,9 +140,7 @@
 
   <div class="container">
     <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن مكان...">
-    <button onclick="searchPlace()">
-      <i class="fas fa-search"></i> بحث
-    </button>
+    <button onclick="searchPlace()"><i class="fas fa-search"></i> بحث</button>
   </div>
 
   <div class="container">
@@ -152,13 +152,20 @@
   <iframe id="mapFrame" src="" class="loaded"></iframe>
 
   <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
-
+  <div class="info" id="weatherInfo"></div>
+  <div class="info" id="favoritesInfo"></div>
+  <div class="info" id="qrcode"></div>
   <div class="info share-links" id="shareLinks" style="display:none;"></div>
 
   <script>
     let mapFrame = document.getElementById("mapFrame");
     let infoDiv = document.getElementById("locationInfo");
     let shareDiv = document.getElementById("shareLinks");
+    let weatherDiv = document.getElementById("weatherInfo");
+    let qrCodeDiv = document.getElementById("qrcode");
+    let favoritesDiv = document.getElementById("favoritesInfo");
+
+    const apiKey = "YOUR_API_KEY"; // استبدلها بمفتاح OpenWeatherMap الخاص بك
 
     function getLocation() {
       if (navigator.geolocation) {
@@ -169,6 +176,10 @@
           await showAddress(lat, lon);
           generateShareLinks(lat, lon);
           saveCSV(lat, lon);
+          showWeather(lat, lon);
+          generateQRCode(lat, lon);
+          saveToFavorites(lat, lon);
+          displayFavorites();
         });
       } else {
         alert("المتصفح لا يدعم تحديد الموقع.");
@@ -210,6 +221,41 @@
       link.href = URL.createObjectURL(blob);
       link.download = `location-${Date.now()}.csv`;
       link.click();
+    }
+
+    async function showWeather(lat, lon) {
+      try {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ar`);
+        const data = await res.json();
+        weatherDiv.innerHTML = `
+          <h3>الطقس الآن:</h3>
+          <p>${data.weather[0].description} - ${data.main.temp}°C</p>
+        `;
+      } catch {
+        weatherDiv.innerHTML = "<p>تعذر جلب بيانات الطقس.</p>";
+      }
+    }
+
+    function generateQRCode(lat, lon) {
+      qrCodeDiv.innerHTML = "<h3>رمز QR للمشاركة:</h3>";
+      new QRCode(qrCodeDiv, {
+        text: `https://maps.google.com/?q=${lat},${lon}`,
+        width: 128,
+        height: 128
+      });
+    }
+
+    function saveToFavorites(lat, lon) {
+      let saved = JSON.parse(localStorage.getItem("locations")) || [];
+      saved.push({ lat, lon, time: new Date().toLocaleString() });
+      localStorage.setItem("locations", JSON.stringify(saved));
+    }
+
+    function displayFavorites() {
+      const saved = JSON.parse(localStorage.getItem("locations")) || [];
+      favoritesDiv.innerHTML = "<h3>المواقع المحفوظة:</h3>" + saved.map(loc =>
+        `<p>${loc.time}: <a href="https://maps.google.com/?q=${loc.lat},${loc.lon}" target="_blank">${loc.lat},${loc.lon}</a></p>`
+      ).join("");
     }
   </script>
 </body>
