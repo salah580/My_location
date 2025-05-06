@@ -1,63 +1,86 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>موقعي على الخريطة</title>
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     body {
       font-family: 'Arial', sans-serif;
       background-color: #f4f4f9;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
       color: #333;
       text-align: center;
       transition: background-color 0.3s, color 0.3s;
     }
+
     .dark-mode {
       background-color: #121212;
       color: #f1f1f1;
     }
+
     h2 {
+      font-size: 24px;
       color: #4CAF50;
       margin-top: 20px;
     }
+
     button {
       background-color: #4CAF50;
       color: white;
-      padding: 10px 20px;
-      margin: 5px;
+      padding: 12px 24px;
+      font-size: 16px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      margin: 10px;
+      transition: background-color 0.3s;
     }
+
     button:hover {
       background-color: #45a049;
     }
+
     #map {
       width: 90%;
       max-width: 800px;
       height: 400px;
-      margin: 20px auto;
       border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
     }
+
     .location-details, .previous-locations {
       background-color: #fff;
       padding: 20px;
-      margin: 20px auto;
+      margin-top: 20px;
       border-radius: 8px;
-      max-width: 800px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
       width: 90%;
     }
+
     .dark-mode .location-details, .dark-mode .previous-locations {
       background-color: #1e1e1e;
     }
+
     .loading {
       font-size: 16px;
       color: #888;
     }
+
+    #errorMsg {
+      margin-top: 10px;
+      color: red;
+      font-weight: bold;
+    }
+
     @media (max-width: 600px) {
       button {
         width: 90%;
@@ -68,32 +91,35 @@
 </head>
 <body>
   <h2 id="mainTitle">اضغط على الزر لتحديد موقعك وحفظه</h2>
+
   <div>
     <button onclick="getLocation()">تحديد الموقع</button>
     <button onclick="toggleDarkMode()">الوضع الداكن</button>
     <button onclick="switchLanguage()">تغيير اللغة</button>
   </div>
+
   <div id="loading" class="loading"></div>
+  <div id="errorMsg"></div>
   <div id="map"></div>
+
   <div class="location-details" id="location">
     <h3>معلومات الموقع:</h3>
     <p>انتظر لحظة... سيتم عرض إحداثيات الموقع بعد تحديده.</p>
     <button id="shareBtn" style="display:none;" onclick="shareLocation()">مشاركة موقعي</button>
   </div>
+
   <div class="previous-locations" id="history">
     <h3>المواقع السابقة:</h3>
     <ul id="historyList"></ul>
   </div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     let language = "ar";
-    let map;
-    let marker;
+    let currentLocation = null;
 
     function getLocation() {
       document.getElementById("loading").textContent = language === "ar" ? "جارٍ تحديد الموقع..." : "Locating...";
+      document.getElementById("errorMsg").textContent = "";
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition, showError);
       } else {
@@ -104,57 +130,76 @@
     function showPosition(position) {
       const lat = position.coords.latitude.toFixed(5);
       const lon = position.coords.longitude.toFixed(5);
+      currentLocation = { lat, lon };
       document.getElementById("loading").textContent = "";
-
-      // Initialize or update map
-      if (!map) {
-        map = L.map('map').setView([lat, lon], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-      } else {
-        map.setView([lat, lon], 15);
-        if (marker) {
-          map.removeLayer(marker);
-        }
-      }
-
-      // Add marker
-      marker = L.marker([lat, lon]).addTo(map);
-
-      // Fetch address using OpenCage API
-      fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=YOUR_API_KEY&language=${language}`)
-        .then(response => response.json())
-        .then(data => {
-          const address = data.results[0].formatted;
-          document.getElementById("location").innerHTML = `
-            <h3>${language === "ar" ? "معلومات الموقع:" : "Location Info:"}</h3>
-            <p>${language === "ar" ? "خط العرض" : "Latitude"}: ${lat}</p>
-            <p>${language === "ar" ? "خط الطول" : "Longitude"}: ${lon}</p>
-            <p>${language === "ar" ? "العنوان" : "Address"}: ${address}</p>
-            <button onclick="shareLocation()"> ${language === "ar" ? "مشاركة موقعي" : "Share Location"} </button>
-          `;
-          saveLocationToFile(lat, lon, address);
-          storeInHistory(lat, lon, address);
-          displayHistory();
-        })
-        .catch(() => {
-          document.getElementById("location").innerHTML = `
-            <h3>${language === "ar" ? "معلومات الموقع:" : "Location Info:"}</h3>
-            <p>${language === "ar" ? "خط العرض" : "Latitude"}: ${lat}</p>
-            <p>${language === "ar" ? "خط الطول" : "Longitude"}: ${lon}</p>
-            <p>${language === "ar" ? "العنوان" : "Address"}: غير متوفر</p>
-            <button onclick="shareLocation()"> ${language === "ar" ? "مشاركة موقعي" : "Share Location"} </button>
-          `;
-          saveLocationToFile(lat, lon, "غير متوفر");
-          storeInHistory(lat, lon, "غير متوفر");
-          displayHistory();
-        });
+      updateLocationInfo();
+      updateMap(lat, lon);
+      storeInHistory(lat, lon);
+      displayHistory();
+      setTimeout(() => {
+        const confirmSave = confirm(language === "ar" ? "هل تريد حفظ الموقع كملف نصي؟" : "Do you want to save the location as a text file?");
+        if (confirmSave) saveLocationToFile(lat, lon);
+      }, 300);
     }
 
-    function saveLocationToFile(lat, lon, address) {
-      const now = new Date().toISOString().slice(0,19).replace(/[:T]/g, '-');
-      const data = `${language === "ar" ? "موقعك الجغرافي" : "Your Location"}:\n${language === "ar" ? "خط العرض" : "Latitude"}: ${lat}\n${language === "ar" ? "خط الطول" : "Longitude"}: ${lon}\n${language === "ar" ? "العنوان" : "Address"}: ${address}`;
+    function updateLocationInfo() {
+      if (!currentLocation) return;
+      const { lat, lon } = currentLocation;
+      document.getElementById("location").innerHTML = `
+        <h3>${language === "ar" ? "معلومات الموقع:" : "Location Info:"}</h3>
+        <p>${language === "ar" ? "خط العرض" : "Latitude"}: ${lat}</p>
+        <p>${language === "ar" ? "خط الطول" : "Longitude"}: ${lon}</p>
+        <button onclick="shareLocation()">${language === "ar" ? "مشاركة موقعي" : "Share Location"}</button>
+      `;
+    }
+
+    function updateMap(lat, lon) {
+      const mapFrame = document.createElement("iframe");
+      mapFrame.width = "100%";
+      mapFrame.height = "400";
+      mapFrame.style.border = "0";
+      mapFrame.loading = "lazy";
+      mapFrame.allowFullscreen = true;
+      mapFrame.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+
+      const mapDiv = document.getElementById("map");
+      mapDiv.innerHTML = "";
+      mapDiv.appendChild(mapFrame);
+    }
+
+    function showError(error) {
+      document.getElementById("loading").textContent = "";
+      const errorDiv = document.getElementById("errorMsg");
+      let message = language === "ar" ? "حدث خطأ في تحديد الموقع." : "Error detecting location.";
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          message = language === "ar" ? "تم رفض الإذن." : "Permission denied.";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          message = language === "ar" ? "الموقع غير متوفر." : "Location unavailable.";
+          break;
+        case error.TIMEOUT:
+          message = language === "ar" ? "انتهت المهلة." : "Request timed out.";
+          break;
+        case 0:
+          message = language === "ar" ? "المتصفح لا يدعم تحديد الموقع." : "Browser does not support location.";
+          break;
+      }
+      errorDiv.textContent = message;
+    }
+
+    function shareLocation() {
+      const text = document.getElementById("location").textContent;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert(language === "ar" ? "تم نسخ الموقع للمشاركة." : "Location copied to clipboard.");
+        });
+      }
+    }
+
+    function saveLocationToFile(lat, lon) {
+      const now = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+      const data = `${language === "ar" ? "موقعك الجغرافي" : "Your Location"}:\n${language === "ar" ? "خط العرض" : "Latitude"}: ${lat}\n${language === "ar" ? "خط الطول" : "Longitude"}: ${lon}`;
       const blob = new Blob([data], { type: 'text/plain' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -162,11 +207,9 @@
       link.click();
     }
 
-    function storeInHistory(lat, lon, address) {
+    function storeInHistory(lat, lon) {
       let locations = JSON.parse(localStorage.getItem("locations")) || [];
-      const timestamp = new Date().toLocaleString();
-      const label = prompt(language === "ar" ? "أدخل اسمًا للموقع:" : "Enter a name for the location:");
-      locations.push({ lat, lon, address, label: label || "", time: timestamp });
+      locations.push({ lat, lon });
       localStorage.setItem("locations", JSON.stringify(locations));
     }
 
@@ -176,40 +219,39 @@
       const locations = JSON.parse(localStorage.getItem("locations")) || [];
       locations.slice(-5).reverse().forEach(loc => {
         const li = document.createElement("li");
-        li.textContent = `${loc.label ? loc.label + " - " : ""}${loc.address} (${loc.time})`;
+        li.textContent = `${language === "ar" ? "عرض على الخريطة" : "View on Map"}: ${loc.lat}, ${loc.lon}`;
         li.style.cursor = "pointer";
         li.onclick = () => {
-          map.setView([loc.lat, loc.lon], 15);
-          if (marker) {
-            map.removeLayer(marker);
-          }
-          marker = L.marker([loc.lat, loc.lon]).addTo(map);
+          window.open(`https://maps.google.com/?q=${loc.lat},${loc.lon}`, '_blank');
         };
         list.appendChild(li);
       });
     }
 
-    function shareLocation() {
-      const locationDiv = document.getElementById("location");
-      const text = locationDiv.innerText;
-      if (navigator.share) {
-        navigator.share({
-          title: language === "ar" ? "موقعي" : "My Location",
-          text: text
-        });
-      } else if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => {
-          alert(language === "ar" ? "تم نسخ الموقع للمشاركة." : "Location copied to clipboard.");
-        });
-      }
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
     }
 
-    function showError(error) {
-      document.getElementById("loading").textContent = "";
-      let message = language === "ar" ? "حدث خطأ في تحديد الموقع." : "Error detecting location.";
-      switch(error.code) {
-        case error.PERMISSION_DENIED:
-          message = language === "ar" ? "تم رفض الإذن." : "Permission denied.";
-          break;
-        case error.POSITION_UNAVAILABLE:
-          message = language === "ar" ? "الموقع غير متوفر0
+    function switchLanguage() {
+      language = (language === "ar") ? "en" : "ar";
+      updateText();
+      displayHistory();
+      updateLocationInfo();
+      document.documentElement.lang = language;
+      document.documentElement.dir = (language === "ar") ? "rtl" : "ltr";
+    }
+
+    function updateText() {
+      document.getElementById("mainTitle").textContent = language === "ar" ? "اضغط على الزر لتحديد موقعك وحفظه" : "Click the button to find and save your location";
+      document.querySelectorAll("button")[0].textContent = language === "ar" ? "تحديد الموقع" : "Get Location";
+      document.querySelectorAll("button")[1].textContent = language === "ar" ? "الوضع الداكن" : "Dark Mode";
+      document.querySelectorAll("button")[2].textContent = language === "ar" ? "تغيير اللغة" : "Switch Language";
+      document.querySelector("#history h3").textContent = language === "ar" ? "المواقع السابقة:" : "Previous Locations:";
+    }
+
+    window.onload = () => {
+      displayHistory();
+    }
+  </script>
+</body>
+</html>
