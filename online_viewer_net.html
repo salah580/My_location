@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>موقعي على الخريطة</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #333;
+    }
+
+    h2 {
+      font-size: 24px;
+      color: #4CAF50;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-bottom: 20px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #map {
+      width: 90%;
+      max-width: 800px;
+      height: 400px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .location-details {
+      background-color: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .location-details h3 {
+      color: #4CAF50;
+    }
+
+    .location-details p {
+      font-size: 16px;
+      color: #555;
+    }
+
+  </style>
+</head>
+<body>
+  <h2>اضغط على الزر لتحديد موقعك وحفظه في ملف نصي</h2>
+  <button onclick="getLocation()">أظهر موقعي وحفظه</button>
+  <div id="map"></div>
+  
+  <div class="location-details" id="location">
+    <h3>معلومات الموقع:</h3>
+    <p>انتظر لحظة... سيتم عرض إحداثيات الموقع بعد تحديده.</p>
+  </div>
+
+  <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      } else {
+        document.getElementById("location").innerHTML = "المتصفح لا يدعم تحديد الموقع.";
+      }
+    }
+
+    function showPosition(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      document.getElementById("location").innerHTML =
+        `<h3>معلومات الموقع:</h3><p>خط العرض: ${lat}</p><p>خط الطول: ${lon}</p>`;
+
+      // إنشاء خريطة مدمجة في iframe
+      const mapFrame = document.createElement("iframe");
+      mapFrame.width = "100%";
+      mapFrame.height = "400";
+      mapFrame.style.border = "0";
+      mapFrame.loading = "lazy";
+      mapFrame.allowFullscreen = true;
+
+      const src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+      mapFrame.src = src;
+
+      const mapDiv = document.getElementById("map");
+      mapDiv.innerHTML = "";
+      mapDiv.appendChild(mapFrame);
+
+      // حفظ الموقع في ملف نصي
+      saveLocationToFile(lat, lon);
+    }
+
+    function saveLocationToFile(lat, lon) {
+      const data = `موقعك الجغرافي:\nخط العرض: ${lat}\nخط الطول: ${lon}`;
+      const blob = new Blob([data], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'موقعي.txt';
+      link.click();
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("تم رفض الإذن بالوصول إلى الموقع.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("معلومات الموقع غير متوفرة.");
+          break;
+        case error.TIMEOUT:
+          alert("انتهت مهلة تحديد الموقع.");
+          break;
+        case error.UNKNOWN_ERROR:
+          alert("خطأ غير معروف.");
+          break;
+      }
+    }
+  </script>
+</body>
+</html>
