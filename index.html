@@ -8,14 +8,14 @@
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #FFD700, #FF6347); /* تدرج لوني أصفر إلى برتقالي */
+      background: linear-gradient(135deg, #FFD700, #1E90FF, #32CD32); /* تدرج لوني أصفر إلى أزرق إلى أخضر */
       margin: 0;
       padding: 0;
       text-align: center;
       animation: fadeIn 1s ease-out;
     }
     header {
-      background-color: #FFA500;
+      background-color: #FFD700;
       color: white;
       padding: 20px;
       font-size: 24px;
@@ -122,12 +122,6 @@
   </div>
 
   <div class="container">
-    <button class="icon-btn" onclick="openWhatsApp()">
-      <i class="fab fa-whatsapp"></i> واتساب <!-- أيقونة واتساب -->
-    </button>
-    <button class="icon-btn" onclick="openTelegram()">
-      <i class="fab fa-telegram-plane"></i> تلغرام <!-- أيقونة تلغرام -->
-    </button>
     <button class="icon-btn" onclick="getLocation()">
       <i class="fas fa-location-arrow"></i> تحديد الموقع <!-- أيقونة تحديد الموقع -->
     </button>
@@ -188,18 +182,6 @@
         <a href="https://wa.me/?text=${encodeURIComponent(url)}" target="_blank">واتساب</a>
         <a href="https://t.me/share/url?url=${encodeURIComponent(url)}" target="_blank">تليجرام</a>
       `;
-    }
-
-    function openWhatsApp() {
-      const text = document.getElementById("locationInfo").textContent;
-      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-      window.open(url, '_blank');
-    }
-
-    function openTelegram() {
-      const text = document.getElementById("locationInfo").textContent;
-      const url = `https://t.me/share/url?url=${encodeURIComponent(text)}`;
-      window.open(url, '_blank');
     }
 
     function saveCSV(lat, lon) {
