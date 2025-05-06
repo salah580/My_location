@@ -15,7 +15,7 @@
       animation: fadeIn 1s ease-out;
     }
     header {
-      background-color: #FFD700;
+      background-color: #C0C0C0; /* لون سلفر */
       color: white;
       padding: 20px;
       font-size: 24px;
@@ -44,10 +44,10 @@
       margin: 10px;
       padding: 12px 20px;
       font-size: 16px;
-      border: none;
+      border: 2px solid #fff; /* إطار أبيض حول الزر */
       border-radius: 12px;
-      background: linear-gradient(145deg, #FFB74D, #FF9800); /* تدرج لوني من البرتقالي الفاتح إلى الغامق */
-      color: white;
+      background: transparent;
+      color: #fff;
       cursor: pointer;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s, box-shadow 0.2s;
@@ -132,7 +132,9 @@
   <header>مرحبًا بك في موقعي الجغرافي</header>
   <div class="container">
     <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن مكان...">
-    <button onclick="searchPlace()">بحث</button>
+    <button onclick="searchPlace()">
+      <i class="fas fa-search"></i> بحث <!-- أيقونة البحث بجانب النص -->
+    </button>
   </div>
 
   <div class="container">
