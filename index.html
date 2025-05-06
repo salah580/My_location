@@ -8,7 +8,7 @@
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #FFD700, #1E90FF, #32CD32); /* تدرج لوني أصفر إلى أزرق إلى أخضر */
+      background: linear-gradient(135deg, #FFEB3B, #FFC107, #FF9800); /* تدرج لوني أصفر */
       margin: 0;
       padding: 0;
       text-align: center;
@@ -24,6 +24,21 @@
     }
     .container {
       padding: 20px;
+    }
+    .search-input {
+      padding: 12px;
+      width: 70%;
+      border-radius: 20px;
+      border: 2px solid #FFC107;
+      margin-top: 20px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .search-input:focus {
+      border-color: #FF9800;
+      outline: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
     button {
       margin: 10px;
@@ -116,17 +131,13 @@
 <body>
   <header>مرحبًا بك في موقعي الجغرافي</header>
   <div class="container">
-    <input type="text" id="searchInput" placeholder="ابحث عن مكان...">
+    <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن مكان...">
     <button onclick="searchPlace()">بحث</button>
-    <button onclick="getLocation()">تحديد موقعي</button>
   </div>
 
   <div class="container">
     <button class="icon-btn" onclick="getLocation()">
       <i class="fas fa-location-arrow"></i> تحديد الموقع <!-- أيقونة تحديد الموقع -->
-    </button>
-    <button class="icon-btn" onclick="searchPlace()">
-      <i class="fas fa-search"></i> بحث <!-- أيقونة البحث -->
     </button>
   </div>
 
