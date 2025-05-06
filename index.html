@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
       margin: 0;
       padding: 0;
       text-align: center;
+      animation: fadeIn 1s ease-out;
     }
     header {
       background-color: #ff6f61;
@@ -32,10 +34,11 @@
       color: white;
       cursor: pointer;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     button:hover {
       transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
     input[type="text"] {
       width: 60%;
@@ -44,6 +47,10 @@
       border-radius: 10px;
       margin-bottom: 10px;
       font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus {
+      border-color: #ff8577;
     }
     iframe {
       width: 90%;
@@ -51,6 +58,10 @@
       border: none;
       border-radius: 12px;
       margin-top: 20px;
+      transition: transform 0.5s ease-in-out;
+    }
+    iframe.loaded {
+      transform: scale(1.05);
     }
     .info {
       background-color: white;
@@ -59,6 +70,8 @@
       border-radius: 12px;
       width: 80%;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      opacity: 0;
+      animation: fadeIn 1s ease-in forwards;
     }
     .share-links a {
       display: inline-block;
@@ -75,6 +88,22 @@
     .share-links a:hover {
       transform: scale(1.05);
     }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @media (max-width: 600px) {
+      input[type="text"] {
+        width: 80%;
+      }
+      button {
+        width: 80%;
+        font-size: 14px;
+      }
+      iframe {
+        height: 300px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -83,7 +112,15 @@
     <input type="text" id="searchInput" placeholder="ابحث عن مكان...">
     <button onclick="searchPlace()">بحث</button>
     <button onclick="getLocation()">تحديد موقعي</button>
-  </div>  <iframe id="mapFrame" src=""></iframe>  <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>  <div class="info share-links" id="shareLinks" style="display:none;"></div>  <script>
+  </div>
+
+  <iframe id="mapFrame" src="" class="loaded"></iframe>
+
+  <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
+
+  <div class="info share-links" id="shareLinks" style="display:none;"></div>
+
+  <script>
     let mapFrame = document.getElementById("mapFrame");
     let infoDiv = document.getElementById("locationInfo");
     let shareDiv = document.getElementById("shareLinks");
@@ -111,6 +148,7 @@
 
     function showMap(lat, lon) {
       mapFrame.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+      mapFrame.classList.add('loaded');
     }
 
     function searchPlace() {
@@ -138,5 +176,6 @@
       link.download = `location-${Date.now()}.csv`;
       link.click();
     }
-  </script></body>
+  </script>
+</body>
 </html>
