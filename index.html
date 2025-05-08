@@ -1,9 +1,10 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>موقعي</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
     body {
@@ -38,44 +39,18 @@
       border: 2px solid #FFC107;
       margin-top: 20px;
       font-size: 16px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
-    .search-input:focus {
-      border-color: #FF9800;
-      outline: none;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    }
-    button {
+    button, .icon-btn {
       margin: 10px;
       padding: 12px 20px;
       font-size: 16px;
-      border: 2px solid #fff;
       border-radius: 12px;
-      background: transparent;
-      color: #fff;
+      border: none;
       cursor: pointer;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
     .icon-btn {
-      margin: 10px;
-      padding: 12px;
-      background-color: transparent;
-      border: 2px solid #fff;
-      color: #fff;
-      border-radius: 12px;
-      font-size: 24px;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .icon-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      font-size: 20px;
+      padding: 10px 15px;
     }
     iframe {
       width: 90%;
@@ -83,10 +58,6 @@
       border: none;
       border-radius: 12px;
       margin-top: 20px;
-      transition: transform 0.5s ease-in-out;
-    }
-    iframe.loaded {
-      transform: scale(1.05);
     }
     .info {
       background-color: white;
@@ -95,78 +66,79 @@
       border-radius: 12px;
       width: 80%;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      opacity: 0;
-      animation: fadeIn 1s ease-in forwards;
-      text-align: right;
     }
     .share-links a {
       display: inline-block;
       margin: 5px;
       padding: 12px 18px;
-      background: linear-gradient(145deg, #25D366, #1ebc57);
+      background: #2196F3;
       color: white;
       border-radius: 12px;
       text-decoration: none;
       font-weight: bold;
-      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
     }
-    .share-links a:hover {
-      transform: scale(1.05);
-    }
-    #qrcode {
-      margin-top: 10px;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @media (max-width: 600px) {
-      input[type="text"] {
-        width: 80%;
-      }
-      button {
-        width: 80%;
-        font-size: 14px;
-      }
-      iframe {
-        height: 300px;
-      }
+    #stats {
+      background: #fff;
+      margin: 20px auto;
+      padding: 10px;
+      border-radius: 10px;
+      width: 80%;
+      font-size: 14px;
+      color: #333;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
   </style>
 </head>
-<body>
-  <header><i class="fas fa-globe"></i> موقعي</header>  <div class="container">
+<body onload="updateStats()">
+
+  <header><i class="fas fa-globe"></i> موقعي</header>
+
+  <div class="container">
     <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن مكان...">
     <button onclick="searchPlace()"><i class="fas fa-search"></i> بحث</button>
-    <button onclick="deleteFavorites()"><i class="fas fa-trash"></i> حذف السجل</button>
-  </div>  <div class="container">
+  </div>
+
+  <div class="container">
     <button class="icon-btn" onclick="getLocation()">
       <i class="fas fa-location-arrow"></i> تحديد الموقع
     </button>
-  </div>  <iframe id="mapFrame" src="" class="loaded"></iframe>  <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
+  </div>
+
+  <iframe id="mapFrame" src=""></iframe>
+
+  <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
   <div class="info" id="weatherInfo"></div>
   <div class="info" id="favoritesInfo"></div>
   <div class="info" id="qrcode"></div>
-  <div class="info share-links" id="shareLinks" style="display:none;"></div>  <script>
+  <div class="info share-links" id="shareLinks" style="display:none;"></div>
+
+  <div class="container">
+    <button onclick="clearFavorites()" style="background:#e53935;color:white;">حذف السجل</button>
+  </div>
+
+  <div id="stats"></div>
+
+  <script>
     let mapFrame = document.getElementById("mapFrame");
     let infoDiv = document.getElementById("locationInfo");
     let shareDiv = document.getElementById("shareLinks");
     let weatherDiv = document.getElementById("weatherInfo");
     let qrCodeDiv = document.getElementById("qrcode");
     let favoritesDiv = document.getElementById("favoritesInfo");
+    let statsDiv = document.getElementById("stats");
 
-    const apiKey = "033dcdb9c7c6eecd2ed5af5a11db5459";
+    const apiKey = "033dcdb9c7c6eecd2ed5af5a11db5459"; // OpenWeatherMap
 
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
+          incrementStat("locationRequests");
           showMap(lat, lon);
           await showAddress(lat, lon);
           generateShareLinks(lat, lon);
-          saveCSV(lat, lon);
+          confirmAndSaveCSV(lat, lon);
           showWeather(lat, lon);
           generateQRCode(lat, lon);
           saveToFavorites(lat, lon);
@@ -185,7 +157,6 @@
 
     function showMap(lat, lon) {
       mapFrame.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
-      mapFrame.classList.add('loaded');
     }
 
     function searchPlace() {
@@ -202,10 +173,14 @@
       shareDiv.innerHTML = `
         <a href="https://wa.me/?text=${encodeURIComponent(url)}" target="_blank">واتساب</a>
         <a href="https://t.me/share/url?url=${encodeURIComponent(url)}" target="_blank">تليجرام</a>
+        <a href="mailto:?subject=موقعي&body=${encodeURIComponent(url)}" target="_blank">بريد إلكتروني</a>
       `;
     }
 
-    function saveCSV(lat, lon) {
+    function confirmAndSaveCSV(lat, lon) {
+      const confirmSave = confirm("هل تريد تنزيل ملف CSV للموقع الحالي؟");
+      if (!confirmSave) return;
+      incrementStat("csvDownloads");
       const csvContent = `Latitude,Longitude\n${lat},${lon}`;
       const blob = new Blob([csvContent], { type: "text/csv" });
       const link = document.createElement("a");
@@ -244,22 +219,34 @@
 
     function displayFavorites() {
       const saved = JSON.parse(localStorage.getItem("locations")) || [];
-      if (saved.length === 0) {
-        favoritesDiv.innerHTML = "<p>لا توجد مواقع محفوظة.</p>";
-        return;
-      }
       favoritesDiv.innerHTML = "<h3>المواقع المحفوظة:</h3>" + saved.map(loc =>
         `<p>${loc.time}: <a href="https://maps.google.com/?q=${loc.lat},${loc.lon}" target="_blank">${loc.lat},${loc.lon}</a></p>`
       ).join("");
     }
 
-    function deleteFavorites() {
-      if (confirm("هل أنت متأكد أنك تريد حذف جميع المواقع المحفوظة؟")) {
-        localStorage.removeItem("locations");
-        displayFavorites();
-      }
+    function clearFavorites() {
+      localStorage.removeItem("locations");
+      favoritesDiv.innerHTML = "<p>تم حذف جميع المواقع المحفوظة.</p>";
     }
 
-    displayFavorites();
-  </script></body>
+    function incrementStat(key) {
+      let stats = JSON.parse(localStorage.getItem("stats")) || { visits: 0, locationRequests: 0, csvDownloads: 0 };
+      stats[key] = (stats[key] || 0) + 1;
+      localStorage.setItem("stats", JSON.stringify(stats));
+      updateStats();
+    }
+
+    function updateStats() {
+      let stats = JSON.parse(localStorage.getItem("stats")) || { visits: 0, locationRequests: 0, csvDownloads: 0 };
+      stats.visits++;
+      localStorage.setItem("stats", JSON.stringify(stats));
+      statsDiv.innerHTML = `
+        <strong>إحصائيات الاستخدام:</strong><br>
+        زيارات الموقع: ${stats.visits}<br>
+        تحديد الموقع: ${stats.locationRequests}<br>
+        تنزيلات CSV: ${stats.csvDownloads}
+      `;
+    }
+  </script>
+</body>
 </html>
