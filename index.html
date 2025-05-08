@@ -2,9 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>موقعي</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
     body {
@@ -15,39 +15,23 @@
       text-align: center;
       animation: fadeIn 1s ease-out;
     }
-
     header {
-      animation: zoomIn 1s ease;
       background-color: #C0C0C0;
+      color: white;
       padding: 10px 20px;
+      font-size: 22px;
       border-radius: 0 0 20px 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       width: fit-content;
       margin: 20px auto;
-    }
-
-    .logo-link {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 10px;
-      text-decoration: none;
-      color: white;
-      font-size: 24px;
     }
-
-    .logo-link:hover {
-      opacity: 0.9;
-    }
-
-    .logo-link img {
-      width: 36px;
-      height: 36px;
-    }
-
     .container {
       padding: 20px;
     }
-
     .search-input {
       padding: 12px;
       width: 70%;
@@ -55,64 +39,26 @@
       border: 2px solid #FFC107;
       margin-top: 20px;
       font-size: 16px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
-
-    .search-input:focus {
-      border-color: #FF9800;
-      outline: none;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    }
-
-    button {
+    button, .icon-btn {
       margin: 10px;
       padding: 12px 20px;
       font-size: 16px;
-      border: 2px solid #fff;
       border-radius: 12px;
-      background: transparent;
-      color: #fff;
+      border: none;
       cursor: pointer;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, box-shadow 0.2s;
     }
-
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    }
-
     .icon-btn {
-      margin: 10px;
-      padding: 12px;
-      background-color: transparent;
-      border: 2px solid #fff;
-      color: #fff;
-      border-radius: 12px;
-      font-size: 24px;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 20px;
+      padding: 10px 15px;
     }
-
-    .icon-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    }
-
     iframe {
       width: 90%;
       height: 400px;
       border: none;
       border-radius: 12px;
       margin-top: 20px;
-      transition: transform 0.5s ease-in-out;
     }
-
-    iframe.loaded {
-      transform: scale(1.05);
-    }
-
     .info {
       background-color: white;
       padding: 15px;
@@ -120,68 +66,35 @@
       border-radius: 12px;
       width: 80%;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      opacity: 0;
-      animation: fadeIn 1s ease-in forwards;
-      text-align: right;
     }
-
     .share-links a {
       display: inline-block;
       margin: 5px;
       padding: 12px 18px;
-      background: linear-gradient(145deg, #25D366, #1ebc57);
+      background: #2196F3;
       color: white;
       border-radius: 12px;
       text-decoration: none;
       font-weight: bold;
-      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
     }
-
-    .share-links a:hover {
-      transform: scale(1.05);
-    }
-
-    #qrcode {
-      margin-top: 10px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes zoomIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    @media (max-width: 600px) {
-      input[type="text"] {
-        width: 80%;
-      }
-      button {
-        width: 80%;
-        font-size: 14px;
-      }
-      iframe {
-        height: 300px;
-      }
+    #stats {
+      background: #fff;
+      margin: 20px auto;
+      padding: 10px;
+      border-radius: 10px;
+      width: 80%;
+      font-size: 14px;
+      color: #333;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
   </style>
 </head>
-<body>
+<body onload="updateStats()">
 
-  <!-- الشعار -->
-  <header>
-    <a href="" class="logo-link">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/9/97/Animated_Globe.gif" alt="كرة أرضية" />
-      <span>موقعي</span>
-    </a>
-  </header>
+  <header><i class="fas fa-globe"></i> موقعي</header>
 
   <div class="container">
-    <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن مكان..." />
+    <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن مكان...">
     <button onclick="searchPlace()"><i class="fas fa-search"></i> بحث</button>
   </div>
 
@@ -191,7 +104,7 @@
     </button>
   </div>
 
-  <iframe id="mapFrame" src="" class="loaded"></iframe>
+  <iframe id="mapFrame" src=""></iframe>
 
   <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
   <div class="info" id="weatherInfo"></div>
@@ -199,38 +112,41 @@
   <div class="info" id="qrcode"></div>
   <div class="info share-links" id="shareLinks" style="display:none;"></div>
 
-  <script>
-    const apiKey = "YOUR_OPENWEATHERMAP_KEY"; // ضع مفتاح OpenWeatherMap الخاص بك هنا
+  <div class="container">
+    <button onclick="clearFavorites()" style="background:#e53935;color:white;">حذف السجل</button>
+  </div>
 
+  <div id="stats"></div>
+
+  <script>
     let mapFrame = document.getElementById("mapFrame");
     let infoDiv = document.getElementById("locationInfo");
-    let weatherDiv = document.getElementById("weatherInfo");
-    let favoritesDiv = document.getElementById("favoritesInfo");
-    let qrCodeDiv = document.getElementById("qrcode");
     let shareDiv = document.getElementById("shareLinks");
+    let weatherDiv = document.getElementById("weatherInfo");
+    let qrCodeDiv = document.getElementById("qrcode");
+    let favoritesDiv = document.getElementById("favoritesInfo");
+    let statsDiv = document.getElementById("stats");
+
+    const apiKey = "YOUR_API_KEY"; // OpenWeatherMap
 
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
+          incrementStat("locationRequests");
           showMap(lat, lon);
           await showAddress(lat, lon);
-          generateQRCode(lat, lon);
-          showWeather(lat, lon);
           generateShareLinks(lat, lon);
+          confirmAndSaveCSV(lat, lon);
+          showWeather(lat, lon);
+          generateQRCode(lat, lon);
           saveToFavorites(lat, lon);
           displayFavorites();
-          askCSVDownload(lat, lon);
         });
       } else {
         alert("المتصفح لا يدعم تحديد الموقع.");
       }
-    }
-
-    function showMap(lat, lon) {
-      mapFrame.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
-      mapFrame.classList.add("loaded");
     }
 
     async function showAddress(lat, lon) {
@@ -239,23 +155,8 @@
       infoDiv.innerHTML = `<h3>الموقع الحالي:</h3><p>${data.display_name}</p>`;
     }
 
-    function generateQRCode(lat, lon) {
-      qrCodeDiv.innerHTML = "<h3>رمز QR:</h3>";
-      new QRCode(qrCodeDiv, {
-        text: `https://maps.google.com/?q=${lat},${lon}`,
-        width: 128,
-        height: 128
-      });
-    }
-
-    function generateShareLinks(lat, lon) {
-      const url = `https://maps.google.com/?q=${lat},${lon}`;
-      shareDiv.style.display = "block";
-      shareDiv.innerHTML = `
-        <a href="https://wa.me/?text=${encodeURIComponent(url)}" target="_blank">واتساب</a>
-        <a href="https://t.me/share/url?url=${encodeURIComponent(url)}" target="_blank">تليجرام</a>
-        <a href="mailto:?subject=موقعي&body=${encodeURIComponent(url)}" target="_blank">البريد الإلكتروني</a>
-      `;
+    function showMap(lat, lon) {
+      mapFrame.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
     }
 
     function searchPlace() {
@@ -266,25 +167,48 @@
       }
     }
 
+    function generateShareLinks(lat, lon) {
+      const url = `https://maps.google.com/?q=${lat},${lon}`;
+      shareDiv.style.display = "block";
+      shareDiv.innerHTML = `
+        <a href="https://wa.me/?text=${encodeURIComponent(url)}" target="_blank">واتساب</a>
+        <a href="https://t.me/share/url?url=${encodeURIComponent(url)}" target="_blank">تليجرام</a>
+        <a href="mailto:?subject=موقعي&body=${encodeURIComponent(url)}" target="_blank">بريد إلكتروني</a>
+      `;
+    }
+
+    function confirmAndSaveCSV(lat, lon) {
+      const confirmSave = confirm("هل تريد تنزيل ملف CSV للموقع الحالي؟");
+      if (!confirmSave) return;
+      incrementStat("csvDownloads");
+      const csvContent = `Latitude,Longitude\n${lat},${lon}`;
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `location-${Date.now()}.csv`;
+      link.click();
+    }
+
     async function showWeather(lat, lon) {
       try {
         const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ar`);
         const data = await res.json();
-        weatherDiv.innerHTML = `<h3>الطقس الآن:</h3><p>${data.weather[0].description} - ${data.main.temp}°C</p>`;
+        weatherDiv.innerHTML = `
+          <h3>الطقس الآن:</h3>
+          <p>${data.weather[0].description} - ${data.main.temp}°C</p>
+        `;
       } catch {
         weatherDiv.innerHTML = "<p>تعذر جلب بيانات الطقس.</p>";
       }
     }
 
-    function askCSVDownload(lat, lon) {
-      if (confirm("هل ترغب بتنزيل ملف CSV يحتوي على الموقع؟")) {
-        const csvContent = `Latitude,Longitude\n${lat},${lon}`;
-        const blob = new Blob([csvContent], { type: "text/csv" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `location-${Date.now()}.csv`;
-        link.click();
-      }
+    function generateQRCode(lat, lon) {
+      qrCodeDiv.innerHTML = "<h3>رمز QR للمشاركة:</h3>";
+      new QRCode(qrCodeDiv, {
+        text: `https://maps.google.com/?q=${lat},${lon}`,
+        width: 128,
+        height: 128
+      });
     }
 
     function saveToFavorites(lat, lon) {
@@ -295,10 +219,33 @@
 
     function displayFavorites() {
       const saved = JSON.parse(localStorage.getItem("locations")) || [];
-      favoritesDiv.innerHTML = `<h3>المواقع المحفوظة:</h3>` +
-        saved.map(loc =>
-          `<p>${loc.time}: <a href="https://maps.google.com/?q=${loc.lat},${loc.lon}" target="_blank">${loc.lat}, ${loc.lon}</a></p>`
-        ).join("");
+      favoritesDiv.innerHTML = "<h3>المواقع المحفوظة:</h3>" + saved.map(loc =>
+        `<p>${loc.time}: <a href="https://maps.google.com/?q=${loc.lat},${loc.lon}" target="_blank">${loc.lat},${loc.lon}</a></p>`
+      ).join("");
+    }
+
+    function clearFavorites() {
+      localStorage.removeItem("locations");
+      favoritesDiv.innerHTML = "<p>تم حذف جميع المواقع المحفوظة.</p>";
+    }
+
+    function incrementStat(key) {
+      let stats = JSON.parse(localStorage.getItem("stats")) || { visits: 0, locationRequests: 0, csvDownloads: 0 };
+      stats[key] = (stats[key] || 0) + 1;
+      localStorage.setItem("stats", JSON.stringify(stats));
+      updateStats();
+    }
+
+    function updateStats() {
+      let stats = JSON.parse(localStorage.getItem("stats")) || { visits: 0, locationRequests: 0, csvDownloads: 0 };
+      stats.visits++;
+      localStorage.setItem("stats", JSON.stringify(stats));
+      statsDiv.innerHTML = `
+        <strong>إحصائيات الاستخدام:</strong><br>
+        زيارات الموقع: ${stats.visits}<br>
+        تحديد الموقع: ${stats.locationRequests}<br>
+        تنزيلات CSV: ${stats.csvDownloads}
+      `;
     }
   </script>
 </body>
