@@ -1,9 +1,10 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>موقعي</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
     body {
@@ -14,39 +15,39 @@
       text-align: center;
       animation: fadeIn 1s ease-out;
     }
-    .logo-header {
+
+    header {
+      animation: zoomIn 1s ease;
       background-color: #C0C0C0;
-      color: white;
-      padding: 12px 24px;
-      font-size: 26px;
+      padding: 10px 20px;
       border-radius: 0 0 20px 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       width: fit-content;
       margin: 20px auto;
+    }
+
+    .logo-link {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
-      font-weight: bold;
+      gap: 10px;
+      text-decoration: none;
+      color: white;
+      font-size: 24px;
     }
-    .logo-text {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(to right, #fff, #FFEB3B, #FFC107);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 28px;
+
+    .logo-link:hover {
+      opacity: 0.9;
     }
-    .rotating {
-      animation: spin 4s linear infinite;
-      font-size: 30px;
+
+    .logo-link img {
+      width: 36px;
+      height: 36px;
     }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
+
     .container {
       padding: 20px;
     }
+
     .search-input {
       padding: 12px;
       width: 70%;
@@ -57,11 +58,13 @@
       transition: all 0.3s ease;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
+
     .search-input:focus {
       border-color: #FF9800;
       outline: none;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
+
     button {
       margin: 10px;
       padding: 12px 20px;
@@ -74,10 +77,12 @@
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s, box-shadow 0.2s;
     }
+
     button:hover {
       transform: scale(1.05);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
+
     .icon-btn {
       margin: 10px;
       padding: 12px;
@@ -89,10 +94,12 @@
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
     }
+
     .icon-btn:hover {
       transform: scale(1.1);
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     }
+
     iframe {
       width: 90%;
       height: 400px;
@@ -101,9 +108,11 @@
       margin-top: 20px;
       transition: transform 0.5s ease-in-out;
     }
+
     iframe.loaded {
       transform: scale(1.05);
     }
+
     .info {
       background-color: white;
       padding: 15px;
@@ -113,7 +122,9 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       opacity: 0;
       animation: fadeIn 1s ease-in forwards;
+      text-align: right;
     }
+
     .share-links a {
       display: inline-block;
       margin: 5px;
@@ -126,16 +137,25 @@
       box-shadow: 0 5px 10px rgba(0,0,0,0.2);
       transition: transform 0.2s;
     }
+
     .share-links a:hover {
       transform: scale(1.05);
     }
+
     #qrcode {
       margin-top: 10px;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
     @media (max-width: 600px) {
       input[type="text"] {
         width: 80%;
@@ -151,9 +171,135 @@
   </style>
 </head>
 <body>
-  <header class="logo-header">
-    <i class="fas fa-globe-americas rotating"></i>
-    <span class="logo-text">موقعي</span>
+
+  <!-- الشعار -->
+  <header>
+    <a href="" class="logo-link">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/97/Animated_Globe.gif" alt="كرة أرضية" />
+      <span>موقعي</span>
+    </a>
   </header>
+
+  <div class="container">
+    <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن مكان..." />
+    <button onclick="searchPlace()"><i class="fas fa-search"></i> بحث</button>
+  </div>
+
+  <div class="container">
+    <button class="icon-btn" onclick="getLocation()">
+      <i class="fas fa-location-arrow"></i> تحديد الموقع
+    </button>
+  </div>
+
+  <iframe id="mapFrame" src="" class="loaded"></iframe>
+
+  <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
+  <div class="info" id="weatherInfo"></div>
+  <div class="info" id="favoritesInfo"></div>
+  <div class="info" id="qrcode"></div>
+  <div class="info share-links" id="shareLinks" style="display:none;"></div>
+
+  <script>
+    const apiKey = "YOUR_OPENWEATHERMAP_KEY"; // ضع مفتاح OpenWeatherMap الخاص بك هنا
+
+    let mapFrame = document.getElementById("mapFrame");
+    let infoDiv = document.getElementById("locationInfo");
+    let weatherDiv = document.getElementById("weatherInfo");
+    let favoritesDiv = document.getElementById("favoritesInfo");
+    let qrCodeDiv = document.getElementById("qrcode");
+    let shareDiv = document.getElementById("shareLinks");
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          showMap(lat, lon);
+          await showAddress(lat, lon);
+          generateQRCode(lat, lon);
+          showWeather(lat, lon);
+          generateShareLinks(lat, lon);
+          saveToFavorites(lat, lon);
+          displayFavorites();
+          askCSVDownload(lat, lon);
+        });
+      } else {
+        alert("المتصفح لا يدعم تحديد الموقع.");
+      }
+    }
+
+    function showMap(lat, lon) {
+      mapFrame.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+      mapFrame.classList.add("loaded");
+    }
+
+    async function showAddress(lat, lon) {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=ar`);
+      const data = await res.json();
+      infoDiv.innerHTML = `<h3>الموقع الحالي:</h3><p>${data.display_name}</p>`;
+    }
+
+    function generateQRCode(lat, lon) {
+      qrCodeDiv.innerHTML = "<h3>رمز QR:</h3>";
+      new QRCode(qrCodeDiv, {
+        text: `https://maps.google.com/?q=${lat},${lon}`,
+        width: 128,
+        height: 128
+      });
+    }
+
+    function generateShareLinks(lat, lon) {
+      const url = `https://maps.google.com/?q=${lat},${lon}`;
+      shareDiv.style.display = "block";
+      shareDiv.innerHTML = `
+        <a href="https://wa.me/?text=${encodeURIComponent(url)}" target="_blank">واتساب</a>
+        <a href="https://t.me/share/url?url=${encodeURIComponent(url)}" target="_blank">تليجرام</a>
+        <a href="mailto:?subject=موقعي&body=${encodeURIComponent(url)}" target="_blank">البريد الإلكتروني</a>
+      `;
+    }
+
+    function searchPlace() {
+      const query = document.getElementById("searchInput").value;
+      if (query) {
+        mapFrame.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=15&output=embed`;
+        infoDiv.innerHTML = `<p>عرض نتائج البحث: ${query}</p>`;
+      }
+    }
+
+    async function showWeather(lat, lon) {
+      try {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ar`);
+        const data = await res.json();
+        weatherDiv.innerHTML = `<h3>الطقس الآن:</h3><p>${data.weather[0].description} - ${data.main.temp}°C</p>`;
+      } catch {
+        weatherDiv.innerHTML = "<p>تعذر جلب بيانات الطقس.</p>";
+      }
+    }
+
+    function askCSVDownload(lat, lon) {
+      if (confirm("هل ترغب بتنزيل ملف CSV يحتوي على الموقع؟")) {
+        const csvContent = `Latitude,Longitude\n${lat},${lon}`;
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `location-${Date.now()}.csv`;
+        link.click();
+      }
+    }
+
+    function saveToFavorites(lat, lon) {
+      let saved = JSON.parse(localStorage.getItem("locations")) || [];
+      saved.push({ lat, lon, time: new Date().toLocaleString() });
+      localStorage.setItem("locations", JSON.stringify(saved));
+    }
+
+    function displayFavorites() {
+      const saved = JSON.parse(localStorage.getItem("locations")) || [];
+      favoritesDiv.innerHTML = `<h3>المواقع المحفوظة:</h3>` +
+        saved.map(loc =>
+          `<p>${loc.time}: <a href="https://maps.google.com/?q=${loc.lat},${loc.lon}" target="_blank">${loc.lat}, ${loc.lon}</a></p>`
+        ).join("");
+    }
+  </script>
 </body>
 </html>
