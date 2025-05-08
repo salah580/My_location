@@ -13,11 +13,6 @@
       padding: 0;
       text-align: center;
       animation: fadeIn 1s ease-out;
-      transition: background 0.5s;
-    }
-    .dark-mode {
-      background: linear-gradient(135deg, #333, #444, #222);
-      color: white;
     }
     header {
       background-color: #C0C0C0;
@@ -36,7 +31,7 @@
     .container {
       padding: 20px;
     }
-    .search-input, .name-input {
+    .search-input {
       padding: 12px;
       width: 70%;
       border-radius: 20px;
@@ -46,7 +41,7 @@
       transition: all 0.3s ease;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
-    .search-input:focus, .name-input:focus {
+    .search-input:focus {
       border-color: #FF9800;
       outline: none;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
@@ -66,6 +61,21 @@
     button:hover {
       transform: scale(1.05);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+    .icon-btn {
+      margin: 10px;
+      padding: 12px;
+      background-color: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+      border-radius: 12px;
+      font-size: 24px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .icon-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     }
     iframe {
       width: 90%;
@@ -87,10 +97,7 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       opacity: 0;
       animation: fadeIn 1s ease-in forwards;
-    }
-    .dark-mode .info {
-      background-color: #333;
-      color: #eee;
+      text-align: right;
     }
     .share-links a {
       display: inline-block;
@@ -129,46 +136,40 @@
   </style>
 </head>
 <body>
-  <header><i class="fas fa-globe"></i> موقعي</header>
-  <div class="container">
+  <header><i class="fas fa-globe"></i> موقعي</header>  <div class="container">
     <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن مكان...">
     <button onclick="searchPlace()"><i class="fas fa-search"></i> بحث</button>
-    <button onclick="toggleDarkMode()">تبديل الوضع الليلي</button>
-  </div>
-  <div class="container">
-    <input type="text" id="locationName" class="name-input" placeholder="اسم الموقع (مثلاً: المنزل)">
-    <button onclick="getLocation()"><i class="fas fa-location-arrow"></i> تحديد الموقع</button>
-  </div>
-  <iframe id="mapFrame" src="" class="loaded"></iframe>
-  <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
+    <button onclick="deleteFavorites()"><i class="fas fa-trash"></i> حذف السجل</button>
+  </div>  <div class="container">
+    <button class="icon-btn" onclick="getLocation()">
+      <i class="fas fa-location-arrow"></i> تحديد الموقع
+    </button>
+  </div>  <iframe id="mapFrame" src="" class="loaded"></iframe>  <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
   <div class="info" id="weatherInfo"></div>
   <div class="info" id="favoritesInfo"></div>
   <div class="info" id="qrcode"></div>
   <div class="info share-links" id="shareLinks" style="display:none;"></div>  <script>
-    const apiKey = "YOUR_API_KEY"; // استبدله بمفتاح OpenWeatherMap
-    const mapFrame = document.getElementById("mapFrame");
-    const infoDiv = document.getElementById("locationInfo");
-    const shareDiv = document.getElementById("shareLinks");
-    const weatherDiv = document.getElementById("weatherInfo");
-    const qrCodeDiv = document.getElementById("qrcode");
-    const favoritesDiv = document.getElementById("favoritesInfo");
+    let mapFrame = document.getElementById("mapFrame");
+    let infoDiv = document.getElementById("locationInfo");
+    let shareDiv = document.getElementById("shareLinks");
+    let weatherDiv = document.getElementById("weatherInfo");
+    let qrCodeDiv = document.getElementById("qrcode");
+    let favoritesDiv = document.getElementById("favoritesInfo");
 
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark-mode");
-    }
+    const apiKey = "YOUR_API_KEY";
 
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
-          const name = document.getElementById("locationName").value || "غير مسمى";
           showMap(lat, lon);
           await showAddress(lat, lon);
           generateShareLinks(lat, lon);
-          generateQRCode(lat, lon);
+          saveCSV(lat, lon);
           showWeather(lat, lon);
-          saveToFavorites(lat, lon, name);
+          generateQRCode(lat, lon);
+          saveToFavorites(lat, lon);
           displayFavorites();
         });
       } else {
@@ -179,15 +180,12 @@
     async function showAddress(lat, lon) {
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=ar`);
       const data = await res.json();
-      const address = data.display_name;
-      infoDiv.innerHTML = `<h3>الموقع الحالي:</h3><p>${address}</p>
-        <button onclick="copyToClipboard('${lat},${lon}')">نسخ الإحداثيات</button>
-        <button onclick="copyToClipboard(\`${address}\`)">نسخ العنوان</button>
-        <button onclick="speakText(\`${address}\`)">تشغيل الصوت</button>`;
+      infoDiv.innerHTML = `<h3>الموقع الحالي:</h3><p>${data.display_name}</p>`;
     }
 
     function showMap(lat, lon) {
       mapFrame.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+      mapFrame.classList.add('loaded');
     }
 
     function searchPlace() {
@@ -204,17 +202,16 @@
       shareDiv.innerHTML = `
         <a href="https://wa.me/?text=${encodeURIComponent(url)}" target="_blank">واتساب</a>
         <a href="https://t.me/share/url?url=${encodeURIComponent(url)}" target="_blank">تليجرام</a>
-        <a href="mailto:?subject=موقعي&body=${encodeURIComponent(url)}" target="_blank">بريد إلكتروني</a>
       `;
     }
 
-    function generateQRCode(lat, lon) {
-      qrCodeDiv.innerHTML = "<h3>رمز QR للمشاركة:</h3>";
-      new QRCode(qrCodeDiv, {
-        text: `https://maps.google.com/?q=${lat},${lon}`,
-        width: 128,
-        height: 128
-      });
+    function saveCSV(lat, lon) {
+      const csvContent = `Latitude,Longitude\n${lat},${lon}`;
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `location-${Date.now()}.csv`;
+      link.click();
     }
 
     async function showWeather(lat, lon) {
@@ -230,37 +227,39 @@
       }
     }
 
-    function saveToFavorites(lat, lon, name) {
+    function generateQRCode(lat, lon) {
+      qrCodeDiv.innerHTML = "<h3>رمز QR للمشاركة:</h3>";
+      new QRCode(qrCodeDiv, {
+        text: `https://maps.google.com/?q=${lat},${lon}`,
+        width: 128,
+        height: 128
+      });
+    }
+
+    function saveToFavorites(lat, lon) {
       let saved = JSON.parse(localStorage.getItem("locations")) || [];
-      saved.push({ lat, lon, name, time: new Date().toLocaleString() });
+      saved.push({ lat, lon, time: new Date().toLocaleString() });
       localStorage.setItem("locations", JSON.stringify(saved));
     }
 
     function displayFavorites() {
       const saved = JSON.parse(localStorage.getItem("locations")) || [];
-      favoritesDiv.innerHTML = `<h3>المواقع المحفوظة:</h3>
-        <button onclick="clearFavorites()">حذف السجل</button>` +
-        saved.map(loc =>
-          `<p><strong>${loc.name}</strong> (${loc.time}):
-            <a href="https://maps.google.com/?q=${loc.lat},${loc.lon}" target="_blank">${loc.lat},${loc.lon}</a>
-          </p>`
-        ).join("");
+      if (saved.length === 0) {
+        favoritesDiv.innerHTML = "<p>لا توجد مواقع محفوظة.</p>";
+        return;
+      }
+      favoritesDiv.innerHTML = "<h3>المواقع المحفوظة:</h3>" + saved.map(loc =>
+        `<p>${loc.time}: <a href="https://maps.google.com/?q=${loc.lat},${loc.lon}" target="_blank">${loc.lat},${loc.lon}</a></p>`
+      ).join("");
     }
 
-    function clearFavorites() {
-      localStorage.removeItem("locations");
-      displayFavorites();
+    function deleteFavorites() {
+      if (confirm("هل أنت متأكد أنك تريد حذف جميع المواقع المحفوظة؟")) {
+        localStorage.removeItem("locations");
+        displayFavorites();
+      }
     }
 
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text);
-      alert("تم النسخ: " + text);
-    }
-
-    function speakText(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ar';
-      speechSynthesis.speak(utterance);
-    }
+    displayFavorites();
   </script></body>
 </html>
