@@ -154,6 +154,7 @@
   <div class="info" id="locationInfo">معلومات الموقع ستظهر هنا...</div>
   <div class="info" id="weatherInfo"></div>
   <div class="info" id="favoritesInfo"></div>
+  <button onclick="clearFavorites()">حذف السجل</button>
   <div class="info" id="qrcode"></div>
   <div class="info share-links" id="shareLinks" style="display:none;"></div>
 
@@ -256,6 +257,14 @@
       favoritesDiv.innerHTML = "<h3>المواقع المحفوظة:</h3>" + saved.map(loc =>
         `<p>${loc.time}: <a href="https://maps.google.com/?q=${loc.lat},${loc.lon}" target="_blank">${loc.lat},${loc.lon}</a></p>`
       ).join("");
+    }
+
+    function clearFavorites() {
+      const confirmDelete = confirm("هل أنت متأكد أنك تريد حذف سجل المواقع؟");
+      if (confirmDelete) {
+        localStorage.removeItem("locations");
+        favoritesDiv.innerHTML = "<p>تم حذف السجل.</p>";
+      }
     }
   </script>
 </body>
